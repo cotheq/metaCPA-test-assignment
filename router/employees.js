@@ -4,29 +4,44 @@ const router = Router();
 const Employees = require("../models/Employees");
 
 /*
-* Бэк:
-* 1) Сделать запрос на получение всех сотрудников
-* 2) Сделать запрос на добавление сотрудника
-* 3) Сделать запрос на удаление сотрудника по id
-* 4) Сделать запрос на обновление сотрудника по id
-* 5) Сделать поиск сотрудников по имени
-* 5) Сделать поиск сотрудников по должности, зарплате и т.д.
-* 6) Сделать пагинацию
-* 7) Написать тесты
-* 8) если не займет времени сделать авторизацию пользователей
-* */
+ * Бэк:
+ * 1) Сделать запрос на получение всех сотрудников СДЕЛАНО
+ * 2) Сделать запрос на добавление сотрудника
+ * 3) Сделать запрос на удаление сотрудника по id
+ * 4) Сделать запрос на обновление сотрудника по id
+ * 5) Сделать поиск сотрудников по имени
+ * 5) Сделать поиск сотрудников по должности, зарплате и т.д.
+ * 6) Сделать пагинацию СДЕЛАНО
+ * 7) Написать тесты
+ * 8) если не займет времени сделать авторизацию пользователей
+ * */
 
-
-
-
-router.get("/employees", (req, res) => {
+router.get("/employees", async (req, res) => {
   try {
-    Employees.find({}, (err, doc) => {
-      if (err) throw err;
-      res.json(doc);
+    let page = Number(req.query.page);
+    let limit = Number(req.query.limit);
+    if (!(limit > 0 && limit < 100)) {
+      limit = 20;
+    }
+    if (!(page >= 1)) {
+      page = 1;
+    }
+    const skip = (page - 1) * limit;
+    const filter = {};
+    const docs = await Employees.find(filter, {}, { skip, limit });
+    const totalRecords = await Employees.count(filter);
+    const totalPages = Math.ceil(totalRecords / limit);
+    console.log(totalRecords, totalPages);
+    res.json({
+      totalRecords,
+      totalPages,
+      page,
+      skip,
+      limit,
+      result: docs,
     });
   } catch (e) {
-    res.status(500).json({ message: e.message });
+    res.status(400).json({ message: e.message });
   }
 });
 
