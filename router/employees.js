@@ -28,11 +28,7 @@ router.get("/employees", async (req, res) => {
     }
     const skip = (page - 1) * limit;
     const filter = {};
-    const docs = await Employees.find(
-      filter,
-      {},
-      { select: "_id", skip, limit }
-    );
+    const docs = await Employees.find(filter, {}, { skip, limit });
     const totalRecords = await Employees.count(filter);
     const totalPages = Math.ceil(totalRecords / limit);
     console.log(totalRecords, totalPages);
