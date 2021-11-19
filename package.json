@@ -1,0 +1,29 @@
+{
+  "name": "metacpa-test-assignment",
+  "version": "1.0.0",
+  "description": "Test assignment for MetaCPA",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "client": "npm run serve --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [
+    "vue",
+    "express",
+    "mongodb"
+  ],
+  "author": "andrew kot",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.13"
+  },
+  "devDependencies": {
+    "concurrently": "^6.4.0",
+    "nodemon": "^2.0.15",
+    "prettier": "2.4.1"
+  }
+}
