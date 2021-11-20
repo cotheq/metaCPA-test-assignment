@@ -3,6 +3,7 @@ const { check, validationResult } = require("express-validator");
 const Employees = require("../models/EmployeesModel");
 const Positions = require("../models/PositionsModel");
 const { fullNamePattern, objectIdPattern } = require("../const/patterns");
+const escapeRegExp = require("../helpers/escapeRegExp");
 
 const router = Router();
 /*
@@ -11,44 +12,52 @@ const router = Router();
  * 2) Сделать запрос на добавление сотрудника СДЕЛАНО
  * 3) Сделать запрос на удаление сотрудника по id СДЕЛАНО
  * 4) Сделать запрос на обновление сотрудника по id сделано
- * 5) Сделать поиск сотрудников по имени
- * 5) Сделать поиск сотрудников по должности, зарплате и т.д.
+ * 5) Сделать поиск сотрудников по имени СДЕЛАНО
  * 6) Сделать пагинацию СДЕЛАНО
  * 7) Написать тесты
  * 8) если не займет времени сделать авторизацию пользователей
  * */
 
-router.get("/employees", async (req, res) => {
-  try {
-    const filter = {};
-    let page = Number(req.query.page);
-    let limit = Number(req.query.limit);
-    if (!(limit > 0 && limit < 100)) {
-      limit = 20;
-    }
-    if (!(page >= 1)) {
-      page = 1;
-    }
-    const skip = (page - 1) * limit;
+router.get(
+  "/employees",
+  check("fullName").matches(fullNamePattern).isLength({ max: 100 }),
+  async (req, res) => {
+    try {
+      const filter = {};
+      if (req.query.fullName) {
+        filter.fullName = {
+          $regex: new RegExp(escapeRegExp(req.query.fullName), "i"),
+        };
+      }
+      let page = Number(req.query.page);
+      let limit = Number(req.query.limit);
+      if (!(limit > 0 && limit < 100)) {
+        limit = 20;
+      }
+      if (!(page >= 1)) {
+        page = 1;
+      }
+      const skip = (page - 1) * limit;
 
-    const totalRecords = await Employees.count(filter);
-    const totalPages = Math.ceil(totalRecords / limit);
-    const result = await Employees.find(filter, {}, { skip, limit }).populate(
-      "position"
-    );
+      const totalRecords = await Employees.count(filter);
+      const totalPages = Math.ceil(totalRecords / limit);
+      const result = await Employees.find(filter, {}, { skip, limit }).populate(
+        "position"
+      );
 
-    res.json({
-      totalRecords,
-      totalPages,
-      page,
-      skip,
-      limit,
-      result,
-    });
-  } catch (e) {
-    res.status(400).json({ message: e.message });
+      res.json({
+        totalRecords,
+        totalPages,
+        page,
+        skip,
+        limit,
+        result,
+      });
+    } catch (e) {
+      res.status(400).json({ message: e.message });
+    }
   }
-});
+);
 
 router.post(
   "/employees",
