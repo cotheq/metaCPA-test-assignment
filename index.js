@@ -5,6 +5,7 @@ const app = express();
 const { SERVER_PORT, MONGODB_URL } = process.env;
 
 app.use("/api", require("./router/employees"));
+app.use("/api", require("./router/positions"));
 
 const startServer = async () => {
   try {

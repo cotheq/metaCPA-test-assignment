@@ -10,8 +10,6 @@ export default defineComponent({
   setup() {
     const getEmployeesList = async () => {
       const res = await fetch("/api/employees");
-      console.log("here");
-      console.log(res);
       return await res.json();
     };
     const employeesList = ref<any>([]);
