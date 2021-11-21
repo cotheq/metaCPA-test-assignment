@@ -6,7 +6,7 @@ interface EmployeePosition {
 interface Employee {
   _id: string;
   fullName: string;
-  birthDate: Date;
+  birthDate: Date | string;
   position: EmployeePosition | null;
   salary: number;
 }
