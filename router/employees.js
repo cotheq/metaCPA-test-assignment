@@ -6,17 +6,6 @@ const { fullNamePattern, objectIdPattern } = require("../const/patterns");
 const escapeRegExp = require("../helpers/escapeRegExp");
 
 const router = Router();
-/*
- * Бэк:
- * 1) Сделать запрос на получение всех сотрудников СДЕЛАНО
- * 2) Сделать запрос на добавление сотрудника СДЕЛАНО
- * 3) Сделать запрос на удаление сотрудника по id СДЕЛАНО
- * 4) Сделать запрос на обновление сотрудника по id сделано
- * 5) Сделать поиск сотрудников по имени СДЕЛАНО
- * 6) Сделать пагинацию СДЕЛАНО
- * 7) Написать тесты
- * 8) если не займет времени сделать авторизацию пользователей
- * */
 
 router.get(
   "/employees",
@@ -87,7 +76,9 @@ router.post(
         salary,
       };
 
-      const result = await Employees.create(newEmployee);
+      let result = await Employees.create(newEmployee);
+      result = await result.populate("position");
+      result.populate("position");
       res.json(result);
     } catch (e) {
       res.status(500).json({ message: e.message });
@@ -97,7 +88,7 @@ router.post(
 
 router.put(
   "/employees",
-  check("id").matches(objectIdPattern).exists(),
+  check("_id").matches(objectIdPattern).exists(),
   check("fullName").matches(fullNamePattern).isLength({ max: 100 }).exists(),
   check("birthDate").isDate().exists(),
   check("salary").isInt({ min: 1 }).exists(),
@@ -109,7 +100,7 @@ router.put(
         res.status(400).json(errors);
         return;
       }
-      const { id, fullName, birthDate, position, salary } = req.query;
+      const { _id, fullName, birthDate, position, salary } = req.query;
 
       const foundPosition = await Positions.findById(position);
       if (!foundPosition) {
@@ -124,9 +115,9 @@ router.put(
         salary,
       };
 
-      const result = await Employees.findByIdAndUpdate(id, employeeToUpdate, {
+      const result = await Employees.findByIdAndUpdate(_id, employeeToUpdate, {
         new: true,
-      });
+      }).populate("position");
       if (!result) {
         res.status(400).send({ errors: [{ msg: "wrong id" }] });
         return;
@@ -140,7 +131,7 @@ router.put(
 
 router.delete(
   "/employees",
-  check("id").matches(objectIdPattern).exists(),
+  check("_id").matches(objectIdPattern).exists(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -149,7 +140,7 @@ router.delete(
         return;
       }
 
-      const result = await Employees.findByIdAndDelete({ _id: req.query.id });
+      const result = await Employees.findByIdAndDelete(req.query._id).populate("position");
       if (!result) {
         res.status(400).send({ errors: [{ msg: "wrong id" }] });
         return;

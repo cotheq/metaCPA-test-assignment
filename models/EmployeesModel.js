@@ -9,7 +9,9 @@ const employeesSchema = new Schema({
     required: true,
     ref: "Positions",
   },
+  __v: { type: Number, select: false },
 });
+
 
 const Employees = model("Employees", employeesSchema);
 
