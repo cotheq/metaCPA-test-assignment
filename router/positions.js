@@ -34,7 +34,7 @@ router.post(
 
 router.put(
   "/positions",
-  check("id").matches(objectIdPattern).exists(),
+  check("_id").matches(objectIdPattern).exists(),
   check("name").isLength({ max: 100 }).exists(),
   async (req, res) => {
     try {
@@ -44,15 +44,15 @@ router.put(
         return;
       }
 
-      const { id, name } = req.query;
-      const foundPosition = await Positions.findById(id);
+      const { _id, name } = req.query;
+      const foundPosition = await Positions.findById(_id);
       if (!foundPosition) {
         res.status(400).json({ errors: [{ msg: "wrong position id" }] });
         return;
       }
 
       const result = await Positions.findByIdAndUpdate(
-        id,
+        _id,
         { name },
         { new: true }
       );
@@ -69,7 +69,7 @@ router.put(
 
 router.delete(
   "/positions",
-  check("id").matches(objectIdPattern).exists(),
+  check("_id").matches(objectIdPattern).exists(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -77,7 +77,7 @@ router.delete(
         res.status(400).json(errors);
         return;
       }
-      const result = await Positions.findByIdAndDelete({ _id: req.query.id });
+      const result = await Positions.findByIdAndDelete({ _id: req.query._id });
       if (!result) {
         res.status(400).send({ errors: [{ msg: "wrong position id" }] });
         return;
