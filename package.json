@@ -14,6 +14,7 @@
     "express",
     "mongodb"
   ],
+  "proxy": "http://localhost:8080",
   "author": "andrew kot",
   "license": "ISC",
   "dependencies": {
