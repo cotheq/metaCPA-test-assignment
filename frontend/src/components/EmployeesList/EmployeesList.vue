@@ -212,7 +212,7 @@ export default defineComponent({
     });
     const searchText = ref("");
     const page = ref(1);
-    const limit = ref(1);
+    const limit = ref(5);
 
     const employeeToEdit = ref<Partial<Employee> | null>(null);
     const employeeToEditPositionId = computed<string | null>(() => {
