@@ -70,7 +70,6 @@ export default new Vuex.Store({
     },
     async loadPositions({ commit }) {
       const result = await api.loadPositions();
-      console.log(result);
       if (result) {
         commit("SET_POSITIONS", result);
       }
